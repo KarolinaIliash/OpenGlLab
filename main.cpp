@@ -79,11 +79,15 @@ int main(int argc, char** argv)
 						glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 					//	posBase.x = mouseRay.x;
 						//posBase.y = mouseRay.y;
-						posBase.x = rayUnProj.x;
-						posBase.y = rayUnProj.y;
-						posBase.z = 0.0f;
+						glm::vec3 pointScreen = (5.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, -5.0f);
+						//posBase.x = (rayUnProj.x);
+						//posBase.y = rayUnProj.y;
+						//posBase.z = 0.0f;
+						posBase.x = pointScreen.x;
+						posBase.y = -pointScreen.y;//i don't understand why but it's necessary..
+						posBase.z = pointScreen.z;
 						posTop.x = posBase.x;
-						posTop.y = posBase.y + height;
+						posTop.y = posBase.y - height;
 						posTop.z = posBase.z;
 						posVertex1.x = posBase.x + halfDiagonal;
 						posVertex1.y = posBase.y;
@@ -103,10 +107,12 @@ int main(int argc, char** argv)
 					break;
 				case MODE::DrawingCone:
 					if (e.button.button == SDL_BUTTON_LEFT) {
-						glm::vec3 mouseRay = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						posBottomCenter.x = mouseRay.x;
-						posBottomCenter.y = mouseRay.y;
-						posBottomCenter.z = 0.0f;
+						//glm::vec3 mouseRay = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						glm::vec3 pointScreen = (5.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, -5.0f);
+						posBottomCenter.x = pointScreen.x;
+						posBottomCenter.y = -pointScreen.y;
+						posBottomCenter.z = pointScreen.z;
 						std::cout << "Enter radius of bottom circle for this cone\n";
 						std::cin >> bottomRadius;
 						std::cout << "Enter radius of top circle for this cone\n";
@@ -114,7 +120,7 @@ int main(int argc, char** argv)
 						std::cout << "Enter height of this cone\n";
 						std::cin >> coneHeight;
 						posTopCenter.x = posBottomCenter.x;
-						posTopCenter.y = posBottomCenter.y + coneHeight;
+						posTopCenter.y = posBottomCenter.y - coneHeight;
 						posTopCenter.z = posBottomCenter.z;
 						obj = new Cone(bottomRadius, topRadius, posBottomCenter, posTopCenter);
 						objects.push_back(obj);

@@ -3,10 +3,16 @@
 #define _USE_MATH_DEFINES
 #include <math.h> 
 
-Pyramid::Pyramid(Vertex Top, Vertex Base, Vertex Vertex1) {
+Pyramid::Pyramid(Vertex Top, Vertex Base, Vertex Vertex1/*, glm::vec2 tex1Triangle, glm::vec2 tex2Triangle, 
+				 glm::vec2 tex3Triangle, glm::vec2 tex4Triangle, glm::vec2 texSquare*/) {
 	this->Top = Top;
 	this->Base = Base;
 	this->Vertex1 = Vertex1;
+	/*this->textureFirstTriangle = tex1Triangle;
+	this->textureSecondTriangle = tex2Triangle;
+	this->textureThirdTriangle = tex3Triangle;
+	this->textureFourthTriangle = tex4Triangle;
+	this->textureSquare = texSquare;*/
 	//this->isPyramide = isPyramide;
 }
 //std::vector<Vertex> GetVertices() {
@@ -15,6 +21,7 @@ Pyramid::Pyramid(Vertex Top, Vertex Base, Vertex Vertex1) {
 //void SetVertices(std::vector<Vertex> vertices) {
 //this->vertices = vertices;
 //}
+
 
 
 void Pyramid::FindVerticesPyramid(glm::vec3 posTop, glm::vec3 posBase, glm::vec3 posVertexSquare1, glm::vec3& posVertexSquare2,
@@ -47,26 +54,7 @@ void Pyramid::Draw(){
 	glm::vec3 posVertex2;
 	glm::vec3 posVertex3;
 	glm::vec3 posVertex4;
-	//	Vertex* vertice = new Vertex[vertices.size()];
-	//for (unsigned int i = 0; i < vertices.size(); i++) {
-	//vertice[i] = vertices[i];
-	//}
-	//unsigned int* indice = new unsigned int[indices.size()];
-	//for (unsigned int i = 0; i < indices.size(); i++) {
-	//indice[i] = indices[i];
-	//}
 	FindVerticesPyramid(*Top.GetPos(), *Base.GetPos(), *Vertex1.GetPos(), posVertex2, posVertex3, posVertex4);
-	/*	Vertex2.GetPos()->x = posVertex2.x;
-	Vertex2.GetPos()->y = posVertex2.y;
-	Vertex2.GetPos()->z = posVertex2.z;
-
-	Vertex3.GetPos()->x = posVertex3.x;
-	Vertex3.GetPos()->y = posVertex3.y;
-	Vertex3.GetPos()->z = posVertex3.z;
-
-	Vertex4.GetPos()->x = posVertex4.x;
-	Vertex4.GetPos()->y = posVertex4.y;
-	Vertex4.GetPos()->z = posVertex4.z;*/
 	Vertex2.MakeVertex(posVertex2, glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
 	Vertex3.MakeVertex(posVertex3, glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
 	Vertex4.MakeVertex(posVertex4, glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec4(0.5f, 0.0f, 0.0f, 1.0f));
@@ -109,7 +97,8 @@ Cone::Cone(float radiusBottom, float radiusTop, glm::vec3 posBottomCenter, glm::
 	this->posTopCenter.z = posTopCenter.z;
 }
 
-void Cone::FindVerticesCone(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) {
+void Cone::FindVerticesCone(std::vector<Vertex>& vertices, std::vector<unsigned int>& indicesBottomCircle, std::vector<unsigned int>& indicesTopCircle, 
+							std::vector<unsigned int>& indicesBody) {
 	glm::vec3 positions;
 	glm::vec2 texCoords;
 	glm::vec3 normals;
@@ -131,100 +120,95 @@ void Cone::FindVerticesCone(std::vector<Vertex>& vertices, std::vector<unsigned 
 
 	vertices.push_back(Vertex(positions, texCoords, normals, colors));
 
+	float x = posBottomCenter.x;
+	float z = posBottomCenter.z;
+
 	positions.x = posBottomCenter.x;
 	positions.y = posBottomCenter.y;
 	positions.z = posBottomCenter.z;
 	vertices.push_back(Vertex(positions, texCoords, normals, colors));
 
-	int slices = 400;
-	//int counterVertices = 1;
-	//int counterIndices = -1;
+	int slices = 350;
 	for (unsigned int i = 0; i < slices; i++) {
-		float theta = ((float)i)*2.0*M_PI / float(slices);
-		float nextTheta = ((float)i + 1)*2.0*M_PI / float(slices);
-		//positions.x = centerTop.GetPos()->x + radiusTop*cos(theta);
-		//positions.y = centerTop.GetPos()->y;
-		//positions.z = centerTop.GetPos()->z + radiusTop*sin(theta);
-		positions.x = radiusTop*cos(theta);
+		float theta = (float)i * 2.0f * M_PI / float(slices);
+		positions.x = x + radiusTop*cos(theta);
 		positions.y = posTopCenter.y;
-		positions.z = radiusTop*sin(theta);
-
+		positions.z = z + radiusTop*sin(theta);
 		texCoords.x = 1;
 		texCoords.y = 0;
 
 		normals.x = 0;
 		normals.y = 0;
 		normals.z = 1;
-
-		//vertices[++counterVertices].MakeVertex(positions, texCoords, normals, colors);
 		vertices.push_back(Vertex(positions, texCoords, normals, colors));
 
-		//positions.x = centerTop.GetPos()->x + radiusTop*cos(nextTheta);
-		//positions.y = centerTop.GetPos()->y;
-		//positions.z = centerTop.GetPos()->z + radiusTop*sin(nextTheta);
+		if (i != 0) {
+			indicesTopCircle.push_back(vertices.size() - 1);
+		}
+		indicesTopCircle.push_back(0);
+		indicesTopCircle.push_back(vertices.size() - 1);
+		if (i == slices - 1) {
+			indicesTopCircle.push_back(2);
+		}
 
-		positions.x = radiusTop*cos(nextTheta);
-		positions.y = posTopCenter.y;
-		positions.z = radiusTop*sin(nextTheta);
-
-		//vertices[++counterVertices].MakeVertex(positions, texCoords, normals, colors);
-		vertices.push_back(Vertex(positions, texCoords, normals, colors));
-
-		//positions.x = centerBottom.GetPos()->x + radiusBottom*cos(theta);
-		//positions.y = centerBottom.GetPos()->y;
-		//positions.z = centerBottom.GetPos()->z + radiusBottom*sin(theta);
-		//vertices[++counterVertices].MakeVertex(positions, texCoords, normals);
-		positions.x = radiusBottom*cos(theta);
+		positions.x = x + radiusBottom*cos(theta);
 		positions.y = posBottomCenter.y;
-		positions.z = radiusBottom*sin(theta);
-		//	vertices[++counterVertices].MakeVertex(positions, texCoords, normals, colors);
+		positions.z = z + radiusBottom*sin(theta);
+
 		vertices.push_back(Vertex(positions, texCoords, normals, colors));
-
-
-		//positions.x = centerBottom.GetPos()->x + radiusBottom*cos(nextTheta);
-		//positions.y = centerBottom.GetPos()->y;
-		//positions.z = centerBottom.GetPos()->z + radiusBottom*sin(nextTheta);
-		positions.x = radiusBottom*cos(nextTheta);
-		positions.y = posBottomCenter.y;
-		positions.z = radiusBottom*sin(nextTheta);
-		//vertices[++counterVertices].MakeVertex(positions, texCoords, normals, colors);
-		vertices.push_back(Vertex(positions, texCoords, normals, colors));
-
-
-		indices.push_back(0);
-		indices.push_back(vertices.size() - 4);
-		indices.push_back(vertices.size() - 3);
-
-		indices.push_back(vertices.size() - 4);
-		indices.push_back(vertices.size() - 3);
-		indices.push_back(vertices.size() - 2);
-
-		indices.push_back(vertices.size() - 3);
-		indices.push_back(vertices.size() - 2);
-		indices.push_back(vertices.size() - 1);
-
-		indices.push_back(vertices.size() - 2);
-		indices.push_back(vertices.size() - 1);
-		indices.push_back(1);
+		if (i != 0) {
+			indicesBottomCircle.push_back(vertices.size() - 1);
+		}
+		indicesBottomCircle.push_back(0);
+		indicesBottomCircle.push_back(vertices.size() - 1);
+		if (i == slices - 1) {
+			indicesBottomCircle.push_back(3);
+		}
 	}
+		for (unsigned int i = 3; i < vertices.size() - 1; i++) {
+			indicesBody.push_back(i - 1);
+			indicesBody.push_back(i);
+			indicesBody.push_back(i + 1);
+		}
+	indicesBody.push_back(vertices.size() - 2);
+	indicesBody.push_back(vertices.size() - 1);
+	indicesBody.push_back(2);
+	indicesBody.push_back(vertices.size() - 1);
+	indicesBody.push_back(2);
+	indicesBody.push_back(3);
 }
+
 void Cone::Draw(){
 	Vertex centerBottom(posBottomCenter, glm::vec2(1.0, 0.0), glm::vec3(1.0, 0.0, 1.0), glm::vec4(0.5, 0.0, 0.0, 1.0));
 	Vertex centerTop(posTopCenter, glm::vec2(1.0, 0.0), glm::vec3(1.0, 0.0, 1.0), glm::vec4(0.5, 0.0, 0.0, 1.0));
 	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-	FindVerticesCone(vertices, indices);
+	std::vector<unsigned int> indicesTopCircle;
+	std::vector<unsigned int> indicesBottomCircle;
+	std::vector<unsigned int> indicesBody;
+	FindVerticesCone(vertices, indicesBottomCircle, indicesTopCircle, indicesBody);
 	Vertex* vertice = new Vertex[vertices.size()];
 	for (unsigned int i = 0; i < vertices.size(); i++) {
 		vertice[i] = vertices[i];
 	}
-	unsigned int* indice = new unsigned int[indices.size()];
-	for (unsigned int i = 0; i < indices.size(); i++) {
-		indice[i] = indices[i];
+	unsigned int* indiceBCircle = new unsigned int[indicesBottomCircle.size()];
+	for (unsigned int i = 0; i < indicesBottomCircle.size(); i++) {
+		indiceBCircle[i] = indicesBottomCircle[i];
 	}
-	Mesh mesh(vertice, vertices.size(), indice, indices.size());
+	unsigned int* indiceTCircle = new unsigned int[indicesTopCircle.size()];
+	for (unsigned int i = 0; i < indicesTopCircle.size(); i++) {
+		indiceTCircle[i] = indicesTopCircle[i];
+	}
+	unsigned int* indiceBody = new unsigned int[indicesBody.size()];
+	for (unsigned int i = 0; i < indicesBody.size(); i++) {
+		indiceBody[i] = indicesBody[i];
+	}
+	Mesh meshBCircle(vertice, vertices.size(), indiceBCircle, indicesBottomCircle.size());
+	Mesh meshTCircle(vertice, vertices.size(), indiceTCircle, indicesTopCircle.size());
+	Mesh meshBody(vertice, vertices.size(), indiceBody, indicesBody.size());
 	Shader shader("./res/basicShader");
 	shader.Bind();
 	shader.Update(transform, camera);
-	mesh.Draw(GL_TRIANGLE_STRIP);
+	meshBCircle.Draw(GL_TRIANGLE_STRIP);
+	meshTCircle.Draw(GL_TRIANGLE_STRIP);
+	meshBody.Draw(GL_TRIANGLE_STRIP);
 }
