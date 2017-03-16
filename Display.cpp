@@ -1,10 +1,30 @@
 #include "display.h"
+#include <GL/glew.h>
 #include <iostream>
-#include"GL\glew.h"
 
 Display::Display(int width, int height, const std::string& title)
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
+	this->width = width;
+	this->height = height;
+	//const SDL_VideoInfo* info = NULL;
+	/* Dimensions of our window. */
+	//int width = 0;
+	//int height = 0;
+	/* Color depth in bits of our window. */
+	//int bpp = 0;
+	/* Flags we will pass into SDL_SetVideoMode. */
+	//int flags = 0;
+	
+	/* First, initialize SDL's video subsystem. */
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		/* Failed, exit. */
+		fprintf(stderr, "Video initialization failed: %s\n",
+			SDL_GetError());
+		//quit_tutorial(1);
+	}
+
+	//info = SDL_GetVideoInfo();
+
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -14,8 +34,15 @@ Display::Display(int width, int height, const std::string& title)
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+	glViewport(0, 0, width, height);
+
+	
+
 	m_window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+//	m_ScreenSurface = SDL_GetWindowSurface(m_window);
 	m_glContext = SDL_GL_CreateContext(m_window);
+
+	//SDL_GL_SetSwapInterval(1);
 
 	GLenum res = glewInit();
 	if (res != GLEW_OK)
@@ -23,27 +50,10 @@ Display::Display(int width, int height, const std::string& title)
 		std::cerr << "Glew failed to initialize!" << std::endl;
 	}
 
-	isClosed = false;
-
 	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-}
-
-void Display::Update() {
-	SDL_GL_SwapWindow(m_window);
-
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		if (e.type == SDL_QUIT) {
-			isClosed = true;
-		}
-	}
-}
-
-bool Display::IsClosed() {
-	return isClosed;
 }
 
 Display::~Display()
@@ -61,5 +71,6 @@ void Display::Clear(float r, float g, float b, float a)
 
 void Display::SwapBuffers()
 {
+	
 	SDL_GL_SwapWindow(m_window);
 }
