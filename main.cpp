@@ -34,10 +34,12 @@ int main(int argc, char** argv)
 	enum class MODE{
 		DrawingPyramid,
 		DrawingCone,
+		ChoosingEdit,
 		Rotation,
 		Translating,
 		Scaling,
-		ChangingColor
+		ChangingColor,
+		PickingObject
 	};
 	SDL_Event e;
 	MODE mode = MODE::DrawingPyramid;
@@ -56,9 +58,31 @@ int main(int argc, char** argv)
 	float topRadius;
 	float coneHeight;
 	Object* obj;
-	std::cout << "Drawing pyramids. If you want go next - click right mouse button\n";
+	bool isFirstPointTR = false;
+	bool isSecondPointTR = false;
+	std::vector<Object*> chosenObjects;
+	//std::cout << "Drawing pyramids. If you want go next - click right mouse button\n";
 	while(isRunning) {
 		void DrawAxes();
+		switch (mode) {
+		case MODE::DrawingPyramid:
+			display.ChangeTitle("Drawing pyramids. Click left mouse button - base of pyramid. Click right mouse button - go to drawing cones");
+			//std::cout << "Click by right mouse button on the base of pyramid\nIf you want go to drawing cones - click somewhere by left mouse button\n";
+			break;
+		case MODE::DrawingCone:
+			display.ChangeTitle("Drawing cones. Click left mouse button - centre of bottom circle of cone. Click right - go to editing");
+			//std::cout << "Click by right mouse button on the center of bottom circle of cone\nIf you want go to editing - click somewhere by left mouse button\n";
+			break;
+		case MODE::PickingObject:
+			display.ChangeTitle("Pick the objects by clicking left mouse button on them. Click right - go to choosing what you wqnt to edit");
+			break;
+		case MODE::ChoosingEdit:
+			display.ChangeTitle("Enter s - to scale, r - to rotation, t - to translation, c - to change color");
+			break;
+		case MODE::Translating:
+			display.ChangeTitle("Click first and the second point of translating vector");
+			break;
+		}
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
 			case SDL_QUIT: 
@@ -77,9 +101,9 @@ int main(int argc, char** argv)
 						//posBase.y = e.button.y;// / (sqrt(e.button.x*e.button.x + e.button.y*e.button.y));
 						glm::vec3 mouseRay = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 						glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-					//	posBase.x = mouseRay.x;
-						//posBase.y = mouseRay.y;
-						glm::vec3 pointScreen = (5.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, -5.0f);
+						//	posBase.x = mouseRay.x;
+							//posBase.y = mouseRay.y;
+						glm::vec3 pointScreen = (-3.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, 3.0f);
 						//posBase.x = (rayUnProj.x);
 						//posBase.y = rayUnProj.y;
 						//posBase.z = 0.0f;
@@ -93,8 +117,8 @@ int main(int argc, char** argv)
 						posVertex1.y = posBase.y;
 						posVertex1.z = posBase.z;
 						obj = new Pyramid(Vertex(posTop, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)),
-												  Vertex(posBase, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)),
-												  Vertex(posVertex1, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)));
+							Vertex(posBase, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)),
+							Vertex(posVertex1, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)));
 						objects.push_back(obj);
 						//obj->Draw();
 					//	display.SwapBuffers();
@@ -109,7 +133,7 @@ int main(int argc, char** argv)
 					if (e.button.button == SDL_BUTTON_LEFT) {
 						//glm::vec3 mouseRay = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 						glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						glm::vec3 pointScreen = (5.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, -5.0f);
+						glm::vec3 pointScreen = (-3.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, 3.0f);
 						posBottomCenter.x = pointScreen.x;
 						posBottomCenter.y = -pointScreen.y;
 						posBottomCenter.z = pointScreen.z;
@@ -126,6 +150,95 @@ int main(int argc, char** argv)
 						objects.push_back(obj);
 						//obj->Draw();
 						//display.SwapBuffers();
+					}
+					else {
+						if (e.button.button == SDL_BUTTON_RIGHT) {
+							mode = MODE::PickingObject;
+						}
+					}
+					break;
+				case MODE::PickingObject:
+					if (e.button.button == SDL_BUTTON_LEFT) {
+						glm::vec3 rayDirection = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						float intersectionDistance;
+						for (int i = 0; i < objects.size(); i++) {
+							if (ray.TestRayOBBIntersection(glm::vec3(0.0f, 0.0f, 3.0f), rayDirection, objects[i]->GetMinBox(), objects[i]->GetMaxBox(),
+								objects[i]->GetModel(), intersectionDistance)) {
+								if (objects[i]->TriangleIntersection(glm::vec3(0.0f, 0.0f, 3.0f), rayDirection, ray)) {
+									chosenObjects.push_back(objects[i]);
+								}
+							}
+						}
+					}
+					else {
+						if (e.button.button == SDL_BUTTON_RIGHT) {
+							mode = MODE::ChoosingEdit;
+						}
+					}
+					break;
+				case MODE::Translating:
+					glm::vec3 toTranslate(0, 0,0 );
+					glm::vec3 firstPoint(0,0,0);
+					glm::vec3 secondPoint(0,0,0);
+					if (!isFirstPointTR) {
+						firstPoint = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						isFirstPointTR = true;
+					}
+					else {
+						if (!isSecondPointTR) {
+							secondPoint = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+							isSecondPointTR = true;
+						}
+					}
+					if (isSecondPointTR) {
+						toTranslate = secondPoint - firstPoint;
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->EditPosTransfrom(toTranslate);
+						}
+						chosenObjects.resize(0);
+						mode = MODE::PickingObject;
+					}
+					break;
+				/*case MODE::Scaling:
+					glm::vec3 scale;
+					std::cout << "Enter in how many times you want to scale object(s)\nx = ";
+					std::cin >> scale.x;
+					std::cout << "y = ";
+					std::cin >> scale.y;
+					std::cout << "z = ";
+					std::cin >> scale.z;
+					for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+						chosenObjects[i]->EditScaleTransform(scale);
+					}
+					chosenObjects.resize(0);
+					mode = MODE::PickingObject;
+					break;*/
+				//case MODE::Rotation: //choosing object in order to find axes to do rotation
+
+				//	break;
+				}
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.sym) {
+				case SDLK_c:
+					if (mode == MODE::ChoosingEdit) {
+						mode = MODE::ChangingColor;
+					}
+					break;
+				case SDLK_t:
+					if (mode == MODE::ChoosingEdit) {
+						mode = MODE::Translating;
+						isFirstPointTR = false;
+						isSecondPointTR = false;
+					}
+					break;
+				case SDLK_r:
+					if (mode == MODE::ChoosingEdit) {
+						mode = MODE::Rotation;
+					}
+					break;
+				case SDLK_s:
+					if (mode == MODE::ChoosingEdit) {
+						mode = MODE::Scaling;
 					}
 				}
 			}

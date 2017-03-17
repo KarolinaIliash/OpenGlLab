@@ -12,6 +12,8 @@ private:
 public:
 	Display(int width, int height, const std::string& title);
 
+	void ChangeTitle(const std::string& title);
+
 	void Clear(float r, float g, float b, float a);
 	void SwapBuffers();
 

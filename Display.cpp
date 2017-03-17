@@ -74,3 +74,7 @@ void Display::SwapBuffers()
 	
 	SDL_GL_SwapWindow(m_window);
 }
+
+void Display::ChangeTitle(const std::string& title) {
+	SDL_SetWindowTitle(m_window, title.c_str());
+}

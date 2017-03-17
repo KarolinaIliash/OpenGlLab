@@ -19,11 +19,14 @@ public:
 		//viewport[1] = params[1];
 		//viewport[2] = params[2];
 		//viewport[3] = params[3];
-		return glm::normalize(glm::unProject(glm::vec3(mouseX, mouseY, 1.0f), transform.GetModelView(camera), camera.GetProjection(), viewport) - glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.GetModelView(camera), camera.GetProjection(), viewport));
+		return glm::normalize(glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.GetModelView(camera), 
+							camera.GetProjection(), viewport) - glm::unProject(glm::vec3(mouseX, mouseY, 1.0f), 
+							transform.GetModelView(camera), camera.GetProjection(), viewport));
 	}
 	glm::vec3 GetRay(float mouseX, float mouseY, int width, int height);// {
 		//glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.g)
 	//}
 	bool TriangleIntersection(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 vertex3, glm::vec3 rayOrigin, glm::vec3 rayDirection, float* out);
+	bool TestRayOBBIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, glm::vec3 minBox, glm::vec3 maxBox, glm::mat4 ModelMatrix, float& intersectionDistance);
 };
 

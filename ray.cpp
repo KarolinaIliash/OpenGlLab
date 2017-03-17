@@ -48,3 +48,89 @@ bool Ray::TriangleIntersection(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 v
 	}
 	return 0;
 }
+
+
+bool Ray::TestRayOBBIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, glm::vec3 minBox, glm::vec3 maxBox, glm::mat4 ModelMatrix, float& intersectionDistance ) {
+	float tMin = 0.0f;
+	float tMax = 100000.0f;
+
+	glm::vec3 OBBpositionWorldSpace(ModelMatrix[3].x, ModelMatrix[3].y, ModelMatrix[3].z);
+
+	glm::vec3 delta = OBBpositionWorldSpace - rayOrigin;
+	// Test intersection with the 2 planes perpendicular to the OBB's X axis
+		glm::vec3 xAxis(ModelMatrix[0].x, ModelMatrix[0].y, ModelMatrix[0].z);
+		float e = glm::dot(xAxis, delta);
+		float f = glm::dot(rayDirection, xAxis);
+
+		if (fabs(f) > 0.001f) { // Standard case
+			float t1 = (e + minBox.x) / f; // Intersection with the "left" plane
+			float t2 = (e + maxBox.x) / f; // Intersection with the "right" plane
+											 // t1 and t2 now contain distances betwen ray origin and ray-plane intersections
+											 // We want t1 to represent the nearest intersection, 
+											 // so if it's not the case, invert t1 and t2
+			if (t1 > t2) {
+				float w = t1; t1 = t2; t2 = w; // swap t1 and t2
+			}
+			// tMax is the nearest "far" intersection (amongst the X,Y and Z planes pairs)
+			if (t2 < tMax)
+				tMax = t2;
+			// tMin is the farthest "near" intersection (amongst the X,Y and Z planes pairs)
+			if (t1 > tMin)
+				tMin = t1;
+
+			// If "far" is closer than "near", then there is NO intersection.
+			if (tMax < tMin)
+				return false;
+		}
+		else { // Rare case : the ray is almost parallel to the planes, so they don't have any "intersection"
+			if (-e + minBox.x > 0.0f || -e + maxBox.x < 0.0f)
+				return false;
+		}
+
+
+	// Test intersection with the 2 planes perpendicular to the OBB's Y axis
+		tMin = 0.0f;
+		tMax = 100000.0f;
+		glm::vec3 Yaxis(ModelMatrix[1].x, ModelMatrix[1].y, ModelMatrix[1].z);
+		 e = glm::dot(Yaxis, delta);
+		 f = glm::dot(rayDirection, Yaxis);
+		if (fabs(f) > 0.001f) {
+			float t1 = (e + minBox.y) / f;
+			float t2 = (e + maxBox.y) / f;
+			if (t1>t2) { float w = t1; t1 = t2; t2 = w; }
+			if (t2 < tMax)
+				tMax = t2;
+			if (t1 > tMin)
+				tMin = t1;
+			if (tMin > tMax)
+				return false;
+		}
+		else {
+			if (-e + minBox.y > 0.0f || -e + maxBox.y < 0.0f)
+				return false;
+		}
+	// Test intersection with the 2 planes perpendicular to the OBB's Z axis
+		tMin = 0.0f;
+		tMax = 100000.0f;
+		glm::vec3 Zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
+		 e = glm::dot(Zaxis, delta);
+		 f = glm::dot(rayDirection, Zaxis);
+
+		if (fabs(f) > 0.001f) {
+			float t1 = (e + minBox.z) / f;
+			float t2 = (e + maxBox.z) / f;
+			if (t1>t2) { float w = t1; t1 = t2; t2 = w; }
+			if (t2 < tMax)
+				tMax = t2;
+			if (t1 > tMin)
+				tMin = t1;
+			if (tMin > tMax)
+				return false;
+		}
+		else {
+			if (-e + minBox.z > 0.0f || -e + maxBox.z < 0.0f)
+				return false;
+		}
+	intersectionDistance = tMin;
+	return true;
+}
