@@ -10,39 +10,23 @@
 struct Transform
 {
 public:
-	Transform(const glm::vec3& pos = glm::vec3(), const glm::vec3& axis = glm::vec3(), const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f), const float& angle = 0.0)
+	Transform(const glm::vec3& pos = glm::vec3(0.0f,0.0f,0.0f), const glm::vec3& axis = glm::vec3(), const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f), const float& angle = 0.0)
 	{
 		this->pos = pos;
 		this->axis = axis;
 		this->angle = angle;
 		this->scale = scale;
-		//glm::vec3 nullAxis{ 0.0, 0.0, 0.0 };
-		//this->cur_quaternion = glm::angleAxis(0.0f, nullAxis);
 		this->curQuaternion = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-		//this->curPosMat = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
-		//this->curScaleMat = glm::scale(glm::vec3(1.0f, 1.0f, 1.0f));
-		//this->curRotMat = glm::toMat4(glm::quat(0, 0, 0, 1));
 	}
 
-	inline glm::mat4 GetModel() //curRotMat не зберігає поточного значення. не вийшло його туди записати поки що6
+	inline glm::mat4 GetModel() 
 	{
 		
 		glm::mat4 posMat = glm::translate(pos);
 		glm::mat4 scaleMat = glm::scale(scale);
-	//	glm::mat4 rotX = glm::rotate(rot.x, glm::vec3(1.0, 0.0, 0.0));
-		//glm::mat4 rotY = glm::rotate(rot.y, glm::vec3(0.0, 1.0, 0.0));
-		//glm::mat4 rotZ = glm::rotate(rot.z, glm::vec3(0.0, 0.0, 1.0));
-		//glm::mat4 newRotMat = glm::rotate(angle, axis);
 		glm::quat quaternion = glm::angleAxis(angle, axis);
 		curQuaternion = quaternion * curQuaternion;
 		glm::mat4 rotMat = glm::toMat4(curQuaternion);
-		//glm::mat4 rotMat = rotX * rotY * rotZ;
-	//	glm::mat4 rotMat = newRotMat * curRotMat;
-		//curRotMat = rotMat;
-
-	//	glm::quat quat = cur_quaternion * quaternion;
-		//curRotMat = glm::toMat4(quat);
-
 		return posMat * rotMat * scaleMat;
 	}
 
@@ -72,6 +56,7 @@ public:
 	inline void EditPos(glm::vec3& pos) { this->pos.x += pos.x; this->pos.y += pos.y; this->pos.z += pos.z; }
 	//inline void SetRotAxis(glm::vec3& axis) { this->axis = axis; }
 	//inline void SetRotAngle(float& angle) { this->angle = angle; }
+
 	inline void EditScale(glm::vec3& scale) { this->scale.x *= scale.x; this->scale.y *= scale.y; this->scale.z *= scale.z;}
 
 

@@ -51,7 +51,7 @@ bool Ray::TriangleIntersection(glm::vec3 vertex1, glm::vec3 vertex2, glm::vec3 v
 
 
 bool Ray::TestRayOBBIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, glm::vec3 minBox, glm::vec3 maxBox, glm::mat4 ModelMatrix, float& intersectionDistance ) {
-	float tMin = 0.0f;
+	float tMin = -100000.0f;
 	float tMax = 100000.0f;
 
 	glm::vec3 OBBpositionWorldSpace(ModelMatrix[3].x, ModelMatrix[3].y, ModelMatrix[3].z);
@@ -89,8 +89,8 @@ bool Ray::TestRayOBBIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, gl
 
 
 	// Test intersection with the 2 planes perpendicular to the OBB's Y axis
-		tMin = 0.0f;
-		tMax = 100000.0f;
+		//tMin = -100000.0f;
+		//tMax = 100000.0f;
 		glm::vec3 Yaxis(ModelMatrix[1].x, ModelMatrix[1].y, ModelMatrix[1].z);
 		 e = glm::dot(Yaxis, delta);
 		 f = glm::dot(rayDirection, Yaxis);
@@ -110,8 +110,8 @@ bool Ray::TestRayOBBIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, gl
 				return false;
 		}
 	// Test intersection with the 2 planes perpendicular to the OBB's Z axis
-		tMin = 0.0f;
-		tMax = 100000.0f;
+		//tMin = -10000.0f;
+		//tMax = 100000.0f;
 		glm::vec3 Zaxis(ModelMatrix[2].x, ModelMatrix[2].y, ModelMatrix[2].z);
 		 e = glm::dot(Zaxis, delta);
 		 f = glm::dot(rayDirection, Zaxis);
@@ -134,3 +134,5 @@ bool Ray::TestRayOBBIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, gl
 	intersectionDistance = tMin;
 	return true;
 }
+
+

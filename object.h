@@ -7,7 +7,8 @@
 
 static const int DISPLAY_WIDTH = 900;
 static const int DISPLAY_HEIGHT = 600;
-static Camera camera(glm::vec3(0.0f, 0.0f, 3.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);//position also is in function which return ray!
+static glm::vec3 cameraPosition(0.0f, 0.0f, -3.0f);
+static Camera camera(/*glm::vec3(-2.0f, -2.0f, -3.0f)*//*glm::vec3(1.0f, 1.0f, -2.0f)*/cameraPosition, 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.01f, 100.0f);//position also is in function which return ray!
 
 class Object {
 public:
@@ -21,6 +22,7 @@ public:
 	virtual void SetAngleRotation(float angle) = 0;
 	virtual void SetAxisRotation(glm::vec3 axis) = 0;
 	virtual glm::vec3 GetObjectAxis() = 0;
+	virtual void DrawStandart() = 0;
 };
 
 class Pyramid : public Object {
@@ -95,6 +97,8 @@ public:
 
 	void Draw() override;
 	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;
+	Pyramid(){}
+	void DrawStandart() override;
 };
 
 class Cone : public Object {
@@ -110,6 +114,7 @@ private:
 	std::vector<unsigned int> indicesBottomCircle;
 	std::vector<unsigned int> indicesBody;
 	std::vector<Vertex> vertices;
+	float delta;
 public:
 	Cone(float radiusBottom, float radiusTop, glm::vec3 posBottomCenter, glm::vec3 posTopCenter);
 	void EditPosTransfrom(glm::vec3 pos) override {
@@ -141,4 +146,8 @@ public:
 		std::vector<unsigned int>& indicesBody);
 	void Draw() override;
 	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;
+	Cone(float delta) {
+		this->delta = delta;
+	}
+	void DrawStandart() override;
 };

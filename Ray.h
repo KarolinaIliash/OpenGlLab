@@ -19,9 +19,12 @@ public:
 		//viewport[1] = params[1];
 		//viewport[2] = params[2];
 		//viewport[3] = params[3];
-		return glm::normalize(glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.GetModelView(camera), 
+		/*return glm::normalize(glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.GetModelView(camera), 
 							camera.GetProjection(), viewport) - glm::unProject(glm::vec3(mouseX, mouseY, 1.0f), 
-							transform.GetModelView(camera), camera.GetProjection(), viewport));
+							transform.GetModelView(camera), camera.GetProjection(), viewport));*/
+		return glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.GetModelView(camera),
+			camera.GetProjection(), viewport) - glm::unProject(glm::vec3(mouseX, mouseY, 1.0f),
+				transform.GetModelView(camera), camera.GetProjection(), viewport);
 	}
 	glm::vec3 GetRay(float mouseX, float mouseY, int width, int height);// {
 		//glm::unProject(glm::vec3(mouseX, mouseY, 0.0f), transform.g)
