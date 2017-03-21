@@ -99,36 +99,46 @@ int main(int argc, char** argv)
 						std::cin >> height;
 						std::cout << "Enter half of diagonal of square of  pyramid\n";
 						std::cin >> halfDiagonal;
-						//std::cout << "Click position of base of pyramid by left button\n"; 
-						//posBase.x = e.button.x;// / (sqrt(e.button.x*e.button.x + e.button.y*e.button.y));
-						//posBase.y = e.button.y;// / (sqrt(e.button.x*e.button.x + e.button.y*e.button.y));
+	
 						glm::vec3 mouseRay = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						//	posBase.x = mouseRay.x;
-						//posBase.y = mouseRay.y;
-					//	glm::vec3 pointScreen = (3.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, -3.0f);
-						glm::vec3 pointScreen = cameraPosition - rayUnProj;
-						//posBase.x = (rayUnProj.x);
-						//posBase.y = rayUnProj.y;
-						//posBase.z = 0.0f;
-						//posBase.x = pointScreen.x;
-						//posBase.y = -pointScreen.y;//i don't understand why but it's necessary..
-						//posBase.z = pointScreen.z;
-						//posTop.x = posBase.x;
-						//posTop.y = posBase.y - height;
-						//posTop.z = posBase.z;
-						//posVertex1.x = posBase.x + halfDiagonal;
-						//posVertex1.y = posBase.y;
-						//posVertex1.z = posBase.z;
-						/*obj = new Pyramid(Vertex(posTop, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)),
-							Vertex(posBase, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)),
-							Vertex(posVertex1, glm::vec2(1, 0), glm::vec3(1, 0, 0), glm::vec4(0.6, 0.0, 0.0, 1.0)));*/
+						float t = cameraPosition.y / (mouseRay - cameraPosition).y;
+						glm::vec3 pointScreen;
+						pointScreen.x = cameraPosition.x + t * (mouseRay - cameraPosition).x;
+						pointScreen.y = cameraPosition.y + t * (mouseRay - cameraPosition).y;
+						pointScreen.z = cameraPosition.z + t * (mouseRay - cameraPosition).z;
+					//	glm::vec3 pointNearPlane = ray.RayUnProj(e.button.x, e.button.y, 0.0f, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						//glm::vec3 pointFarPlane = ray.RayUnProj(e.button.x, e.button.y, 1.0f, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						/*float t = pointFarPlane.y / (pointFarPlane - pointNearPlane).y;
+						glm::vec3 pointScreen;
+						pointScreen.x = pointFarPlane.x + t*(pointFarPlane - pointNearPlane).x;
+						pointScreen.y = pointFarPlane.y + t*(pointFarPlane - pointNearPlane).y;
+						pointScreen.z = pointFarPlane.z + t*(pointFarPlane - pointNearPlane).z;*/
+						//glm::vec3 pointScreen = glm::vec3(pointNearPlane.x, pointNearPlane.y, -(pointNearPlane.z + pointFarPlane.z) / 2.0f);
+					//	glm::vec3 pointScreen = cameraPosition - glm::vec3(5*rayUnProj.x, 5*rayUnProj.y, 5*rayUnProj.z);
+						//Vertex rayVertex(pointNearPlane, glm::vec2(1.0, 0.0), glm::vec3(1, 1, 1), glm::vec4(1.0, 1.0, 1.0, 1.0));
+						//Vertex cameraVertex(pointFarPlane, glm::vec2(1.0, 0.0), glm::vec3(1, 1, 1), glm::vec4(0.9, 1.0, 1.0, 1.0));
+						//Vertex raypoint1(glm::vec3(cameraPosition.x + 5 * mouseRay.x, cameraPosition.y + 5 * mouseRay.y, cameraPosition.z + 5 * mouseRay.z),
+						//	glm::vec2(1.0, 0.0), glm::vec3(1, 1, 1), glm::vec4(1.0, 1.0, 1.0, 1.0));
+						//Vertex raypoint2(glm::vec3(cameraPosition.x + 7 * mouseRay.x, cameraPosition.y + 7 * mouseRay.y, cameraPosition.z + 7 * mouseRay.z),
+						//	glm::vec2(1.0, 0.0), glm::vec3(1, 1, 1), glm::vec4(1.0, 1.0, 1.0, 1.0));
+						////Vertex verticeray[] = { rayVertex, cameraVertex };
+						//Vertex verticeray[] = { raypoint1, raypoint2 };
+						//unsigned int indiceray[] = { 0,1 };
+						//Mesh rayMesh(verticeray, 2, indiceray, 2);
+						//Shader shader("./res/basicShader");
+						//Transform transform;
+						//shader.Bind();
+						//transform.EditScale(glm::vec3(100, 100, 100));
+						//camera.set_pos(glm::vec3(2, 10, 10));
+						//	shader.Update(transform, camera);
+						//rayMesh.Draw(GL_LINES);
+						//camera.set_pos(glm::vec3(-2, 10, 10));
 						obj = new Pyramid();
-						obj->EditPosTransfrom(pointScreen);
-	//					obj->EditScaleTransform(glm::vec3(halfDiagonal, height, halfDiagonal));
+						//obj->EditPosTransfrom(pointScreen);
+						//obj->EditPosTransfrom(glm::vec3(2, 2, 15));
+						//obj->EditScaleTransform(glm::vec3(halfDiagonal, height, halfDiagonal));
 						objects.push_back(obj);
-						//obj->Draw();
-						//	display.SwapBuffers();
+					
 					}
 					else {
 						if (e.button.button == SDL_BUTTON_RIGHT) {
@@ -139,9 +149,9 @@ int main(int argc, char** argv)
 				case MODE::DrawingCone:
 					if (e.button.button == SDL_BUTTON_LEFT) {
 						//glm::vec3 mouseRay = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+					//	glm::vec3 rayUnProj = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 					//	glm::vec3 pointScreen = (3.0f / rayUnProj.z)*rayUnProj + glm::vec3(0.0f, 0.0f, -3.0f);
-						glm::vec3 pointScreen = cameraPosition + rayUnProj;
+						//glm::vec3 pointScreen = cameraPosition + rayUnProj;
 					/*	posBottomCenter.x = pointScreen.x;
 						posBottomCenter.y = -pointScreen.y;
 						posBottomCenter.z = pointScreen.z;*/
@@ -155,7 +165,7 @@ int main(int argc, char** argv)
 						posTopCenter.y = posBottomCenter.y - coneHeight;
 						posTopCenter.z = posBottomCenter.z;*/
 						obj = new Cone(bottomRadius/topRadius);
-						obj->EditPosTransfrom(pointScreen);
+					//	obj->EditPosTransfrom(pointScreen);
 						obj->EditScaleTransform(glm::vec3(bottomRadius, coneHeight, topRadius));
 						objects.push_back(obj);
 						//obj->Draw();
@@ -169,19 +179,31 @@ int main(int argc, char** argv)
 					break;
 				case MODE::PickingObject:
 					if (e.button.button == SDL_BUTTON_LEFT) {
-						glm::vec3 rayDirection = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						float intersectionDistance;
-						for (int i = 0; i < objects.size(); i++) {
-							/*if (ray.TestRayOBBIntersection(glm::vec3(0.0f, 0.0f, 3.0f), rayDirection, objects[i]->GetMinBox(), objects[i]->GetMaxBox(),
-							objects[i]->GetModel(), intersectionDistance)) {
-							if (objects[i]->TriangleIntersection(glm::vec3(0.0f, 0.0f, 3.0f), rayDirection, ray)) {
-							chosenObjects.push_back(objects[i]);
-							}
-							}*/
-							if (objects[i]->TriangleIntersection(glm::vec3(0.0f, 0.0f, -3.0f), rayDirection, ray)) {
-								chosenObjects.push_back(objects[i]);
-							}
-						}
+					////	glm::vec3 rayDirection = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+					//	glm::vec3 rayDirection = ray.GetRay(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+					//	float intersectionDistance;
+						//for (int i = 0; i < objects.size(); i++) {
+						//	/*if (ray.TestRayOBBIntersection(glm::vec3(0.0f, 0.0f, 3.0f), rayDirection, objects[i]->GetMinBox(), objects[i]->GetMaxBox(),
+						//	objects[i]->GetModel(), intersectionDistance)) {
+						//	if (objects[i]->TriangleIntersection(glm::vec3(0.0f, 0.0f, 3.0f), rayDirection, ray)) {
+						//	chosenObjects.push_back(objects[i]);
+						//	}
+						//	}*/
+						//	/*if (objects[i]->TriangleIntersection(cameraPosition, rayDirection, ray)) {
+						//		chosenObjects.push_back(objects[i]);
+						//	}*/
+
+						//}
+					GLbyte color[4];
+					GLfloat depth;
+					GLuint index;
+
+					glReadPixels(e.button.x, DISPLAY_HEIGHT - e.button.y - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+					glReadPixels(e.button.x, DISPLAY_HEIGHT - e.button.y - 1, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+					glReadPixels(e.button.x, DISPLAY_HEIGHT - e.button.y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+					if (index) {
+						chosenObjects.push_back(objects[index-1]);
+					}
 					}
 					else {
 						if (e.button.button == SDL_BUTTON_RIGHT) {
@@ -192,14 +214,14 @@ int main(int argc, char** argv)
 				case MODE::Translating:
 
 					if (!isFirstPointTR) {
-						firstPoint = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-						firstPoint = (3.0f / firstPoint.z)*firstPoint + glm::vec3(0.0f, 0.0f, -3.0f);
+					//	firstPoint = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+					//	firstPoint = (3.0f / firstPoint.z)*firstPoint + glm::vec3(0.0f, 0.0f, -3.0f);
 						isFirstPointTR = true;
 					}
 					else {
 						if (!isSecondPointTR) {
-							secondPoint = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-							secondPoint = (3.0f / secondPoint.z)*secondPoint + glm::vec3(0.0f, 0.0f, -3.0f);
+						//	secondPoint = ray.RayUnProj(e.button.x, e.button.y, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+						//	secondPoint = (3.0f / secondPoint.z)*secondPoint + glm::vec3(0.0f, 0.0f, -3.0f);
 							isSecondPointTR = true;
 						}
 					}
@@ -258,8 +280,12 @@ int main(int argc, char** argv)
 			}
 		}
 		display.Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearStencil(0);
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 		
 		for (int i = 0; i < objects.size(); i++) {
+			glStencilFunc(GL_ALWAYS, i + 1, -1);
 			objects[i]->DrawStandart();
 		}
 		DrawAxes();
@@ -283,7 +309,7 @@ void DrawAxes() {
 	};
 	Transform transform;
 	float count = 10;
-	transform.EditScale(glm::vec3(10, 10, 10));
+	transform.EditScale(glm::vec3(100, 100, 100));
 	Shader shader("./res/basicShader");
 	Mesh meshZ(vertices, 2, indices, 2);
 	shader.Bind();

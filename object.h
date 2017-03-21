@@ -7,7 +7,8 @@
 
 static const int DISPLAY_WIDTH = 900;
 static const int DISPLAY_HEIGHT = 600;
-static glm::vec3 cameraPosition(0.0f, 0.0f, -3.0f);
+static glm::vec3 cameraPosition(2.0f, 10.0f, 10.0f);
+//static glm::vec3 cameraPosition(-2.0f, -2.0f, -3.0f);
 static Camera camera(/*glm::vec3(-2.0f, -2.0f, -3.0f)*//*glm::vec3(1.0f, 1.0f, -2.0f)*/cameraPosition, 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.01f, 100.0f);//position also is in function which return ray!
 
 class Object {
