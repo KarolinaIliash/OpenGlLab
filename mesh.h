@@ -58,7 +58,7 @@ class Mesh
 {
 public:
 //	Mesh(const std::string& fileName);
-	Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices);
+	Mesh(std::vector<Vertex>vertices, unsigned int numVertices, std::vector<unsigned int> indices, unsigned int numIndices);
 
 	void Draw(GLenum mode);
 

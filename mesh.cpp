@@ -42,7 +42,7 @@
 	glBindVertexArray(0);
 }*/
 
-Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, unsigned int numIndices)
+Mesh::Mesh(std::vector<Vertex>vertices, unsigned int numVertices, std::vector<unsigned int> indices, unsigned int numIndices)
 {
 	m_numIndices = numIndices;
 
@@ -89,7 +89,7 @@ Mesh::Mesh(Vertex* vertices, unsigned int numVertices, unsigned int* indices, un
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vertexArrayBuffers[INDEX_VB]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices*sizeof(indices[0]),indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices*sizeof(indices[0]),&indices[0], GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 }

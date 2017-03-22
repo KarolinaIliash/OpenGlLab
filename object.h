@@ -7,22 +7,22 @@
 
 static const int DISPLAY_WIDTH = 900;
 static const int DISPLAY_HEIGHT = 600;
-static glm::vec3 cameraPosition(2.0f, 10.0f, 10.0f);
+static glm::vec3 cameraPosition(2.0f, 5.0f, 5.0f);
 //static glm::vec3 cameraPosition(-2.0f, -2.0f, -3.0f);
 static Camera camera(/*glm::vec3(-2.0f, -2.0f, -3.0f)*//*glm::vec3(1.0f, 1.0f, -2.0f)*/cameraPosition, 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.01f, 100.0f);//position also is in function which return ray!
 
 class Object {
 public:
-	virtual void Draw() = 0;
+	//virtual void Draw() = 0;
 	virtual void EditPosTransfrom(glm::vec3 pos) = 0;
 	virtual void EditScaleTransform(glm::vec3 scale) = 0;
 	virtual glm::vec3 GetMinBox() = 0;
 	virtual glm::vec3 GetMaxBox() = 0;
 	virtual glm::mat4 GetModel() = 0;
-	virtual bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) = 0;
+	//virtual bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) = 0;
 	virtual void SetAngleRotation(float angle) = 0;
 	virtual void SetAxisRotation(glm::vec3 axis) = 0;
-	virtual glm::vec3 GetObjectAxis() = 0;
+	//virtual glm::vec3 GetObjectAxis() = 0;
 	virtual void DrawStandart() = 0;
 };
 
@@ -86,18 +86,18 @@ public:
 		this->textureSquare = texture;
 	}*/
 
-	void FindVerticesPyramid(glm::vec3 posTop, glm::vec3 posBase, glm::vec3 posVertexSquare1, glm::vec3& posVertexSquare2,
-		glm::vec3& posVertexSquare3, glm::vec3& posVertexSquare4);
+	/*void FindVerticesPyramid(glm::vec3 posTop, glm::vec3 posBase, glm::vec3 posVertexSquare1, glm::vec3& posVertexSquare2,
+		glm::vec3& posVertexSquare3, glm::vec3& posVertexSquare4);*/
 	glm::vec3 GetMinBox() override{
 		return this->minBox;
 	}
 	glm::vec3 GetMaxBox() override{
 		return this->maxBox;
 	}
-	glm::vec3 GetObjectAxis() override;
+	/*glm::vec3 GetObjectAxis() override;
 
 	void Draw() override;
-	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;
+	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;*/
 	Pyramid(){}
 	void DrawStandart() override;
 };
@@ -111,13 +111,13 @@ private:
 	Transform transform;
 	glm::vec3 minBox;
 	glm::vec3 maxBox;
-	std::vector<unsigned int> indicesTopCircle;
-	std::vector<unsigned int> indicesBottomCircle;
-	std::vector<unsigned int> indicesBody;
-	std::vector<Vertex> vertices;
+//	std::vector<unsigned int> indicesTopCircle;
+//	std::vector<unsigned int> indicesBottomCircle;
+//	std::vector<unsigned int> indicesBody;
+//	std::vector<Vertex> vertices;
 	float delta;
 public:
-	Cone(float radiusBottom, float radiusTop, glm::vec3 posBottomCenter, glm::vec3 posTopCenter);
+	/*Cone(float radiusBottom, float radiusTop, glm::vec3 posBottomCenter, glm::vec3 posTopCenter);*/
 	void EditPosTransfrom(glm::vec3 pos) override {
 		transform.EditPos(pos);
 	}
@@ -138,15 +138,15 @@ public:
 		return this->maxBox;
 	}
 
-	glm::vec3 GetObjectAxis() override;
+	/*glm::vec3 GetObjectAxis() override;*/
 
 	glm::mat4 GetModel() override{
 		return transform.GetModel();
 	}
-	void FindVerticesCone(std::vector<Vertex>& vertices, std::vector<unsigned int>& indicesBottomCircle, std::vector<unsigned int>& indicesTopCircle,
+	/*void FindVerticesCone(std::vector<Vertex>& vertices, std::vector<unsigned int>& indicesBottomCircle, std::vector<unsigned int>& indicesTopCircle,
 		std::vector<unsigned int>& indicesBody);
 	void Draw() override;
-	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;
+	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;*/
 	Cone(float delta) {
 		this->delta = delta;
 	}
