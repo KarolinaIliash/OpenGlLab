@@ -16,14 +16,13 @@ public:
 	//virtual void Draw() = 0;
 	virtual void EditPosTransfrom(glm::vec3 pos) = 0;
 	virtual void EditScaleTransform(glm::vec3 scale) = 0;
-	//virtual glm::vec3 GetMinBox() = 0;
-	//virtual glm::vec3 GetMaxBox() = 0;
 	virtual glm::mat4 GetModel() = 0;
 	//virtual bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) = 0;
 	virtual void SetAngleRotation(float angle) = 0;
 	virtual void SetAxisRotation(glm::vec3 axis) = 0;
 	virtual glm::vec3 GetObjectAxis() = 0;
 	virtual void DrawStandart() = 0;
+	virtual void ChangeColor(int) = 0;
 };
 
 class Pyramid : public Object {
@@ -36,15 +35,27 @@ private:
 	Vertex Base;
 	Transform transform;
 	glm::vec3 height;
+	glm::vec4 colorSquare;
+	glm::vec4 colorTriangle1;
+	glm::vec4 colorTriangle2;
+	glm::vec4 colorTriangle3;
+	glm::vec4 colorTriangle4;
 public:
-	Pyramid(Vertex Top, Vertex Base, Vertex Vertex1/*, glm::vec2 tex1Triangle, glm::vec2 tex2Triangle,
-		glm::vec2 tex3Triangle, glm::vec2 tex4Triangle, glm::vec2 texSquare*/);
-	//std::vector<Vertex> GetVertices() {
-	//return vertices;
-	//}
-	//void SetVertices(std::vector<Vertex> vertices) {
-	//this->vertices = vertices;
-	//}
+	//Pyramid(Vertex Top, Vertex Base, Vertex Vertex1/*, glm::vec2 tex1Triangle, glm::vec2 tex2Triangle,
+	//	glm::vec2 tex3Triangle, glm::vec2 tex4Triangle, glm::vec2 texSquare*/);
+	////std::vector<Vertex> GetVertices() {
+	////return vertices;
+	////}
+	////void SetVertices(std::vector<Vertex> vertices) {
+	////this->vertices = vertices;
+	////}
+	Pyramid() {
+		colorSquare = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+		colorTriangle1 = glm::vec4(0.5, 0.0f, 0.0f, 1.0f);
+		colorTriangle2 = glm::vec4(0.5, 0.0f, 0.0f, 1.0f);
+		colorTriangle3 = glm::vec4(0.5, 0.0f, 0.0f, 1.0f);
+		colorTriangle4 = glm::vec4(0.5, 0.0f, 0.0f, 1.0f);
+	}
 	void EditPosTransfrom(glm::vec3 pos) override {
 		transform.EditPos(pos);
 	}
@@ -63,30 +74,10 @@ public:
 	void SetAxisRotation(glm::vec3 axis) override{
 		transform.SetRotAxis(axis);
 	}
-	/*void SetTexture1Triangle(glm::vec2 texture) {
-		this->textureFirstTriangle = texture;
-	}
-
-	void SetTexture2Triangle(glm::vec2 texture) {
-		this->textureSecondTriangle = texture;
-	}
-	void SetTexture3Triangle(glm::vec2 texture) {
-		this->textureThirdTriangle = texture;
-	}
-	void SetTexture4Triangle(glm::vec2 texture) {
-		this->textureFourthTriangle = texture;
-	}
-	void SetTextureSquare(glm::vec2 texture) {
-		this->textureSquare = texture;
-	}*/
-
-	/*void FindVerticesPyramid(glm::vec3 posTop, glm::vec3 posBase, glm::vec3 posVertexSquare1, glm::vec3& posVertexSquare2,
-		glm::vec3& posVertexSquare3, glm::vec3& posVertexSquare4);*/
 	glm::vec3 GetObjectAxis() override;
-	/*void Draw() override;
-	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;*/
-	Pyramid(){}
+//	Pyramid(){}
 	void DrawStandart() override;
+	void ChangeColor(int) override;
 };
 
 class Cone : public Object {
@@ -95,6 +86,9 @@ private:
 	float radiusTop;
 	glm::vec3 posBottomCenter;
 	glm::vec3 posTopCenter;
+	glm::vec4 colorTop;
+	glm::vec4 colorBottom;
+	glm::vec4 colorBody;
 	Transform transform;
 	glm::vec3 height;
 //	std::vector<unsigned int> indicesTopCircle;
@@ -135,6 +129,36 @@ public:
 	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;*/
 	Cone(float delta) {
 		this->delta = delta;
+		colorTop = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+		colorBottom = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
+		colorBody = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f);
 	}
+
+	void SetColorTop(glm::vec4 colorTop) {
+		this->colorTop = colorTop;
+	}
+
+	void SetColorBottom(glm::vec4 colorBottom) {
+		this->colorBottom = colorBottom;
+	}
+
+	void SetColorBody(glm::vec4 colorBody) {
+		this->colorBody = colorBody;
+	}
+
+	glm::vec4 GetColorTop() {
+		return colorTop;
+	}
+
+	glm::vec4 GetColorBottom() {
+		return colorBottom;
+	}
+
+	glm::vec4 GetColorBody() {
+		return colorBody;
+	}
+
 	void DrawStandart() override;
+
+	void ChangeColor(int) override;
 };

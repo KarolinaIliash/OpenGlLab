@@ -76,6 +76,9 @@ int main(int argc, char** argv)
 		case MODE::Rotation:
 			display.ChangeTitle("Pick by mouse object's axis or by keys axis x, y or z and enter angle of rotation in consol");
 			break;
+		case MODE::ChangingColor:
+			display.ChangeTitle("Enter keys from 1 to 5 to change color of object's element(for cone only 1-3) and 0 - of all object");
+			break;
 		}
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -201,6 +204,11 @@ int main(int argc, char** argv)
 						obj->EditScaleTransform(glm::vec3(bottomRadius, coneHeight, bottomRadius));
 						objects.push_back(obj);
 						break;
+					case MODE::ChangingColor:
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->ChangeColor(0);
+						}
+						break;
 					}
 					break;
 				case SDLK_1:
@@ -218,6 +226,11 @@ int main(int argc, char** argv)
 						obj->EditScaleTransform(glm::vec3(bottomRadius, coneHeight, bottomRadius));
 						obj->EditPosTransfrom(glm::vec3(-2.0f, 1.0f, -2.0f));
 						objects.push_back(obj);
+						break;
+					case MODE::ChangingColor:
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->ChangeColor(1);
+						}
 						break;
 					}
 					break;
@@ -237,6 +250,11 @@ int main(int argc, char** argv)
 						obj->EditPosTransfrom(glm::vec3(0.0f, 2.0f, -2.0f));
 						objects.push_back(obj);
 						break;
+					case MODE::ChangingColor:
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->ChangeColor(2);
+						}
+						break;
 					}
 					break;
 				case SDLK_3:
@@ -254,6 +272,11 @@ int main(int argc, char** argv)
 						obj->EditScaleTransform(glm::vec3(bottomRadius, coneHeight, bottomRadius));
 						obj->EditPosTransfrom(glm::vec3(2.0f, 0.5f, -2.0f));
 						objects.push_back(obj);
+						break;
+					case MODE::ChangingColor:
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->ChangeColor(3);
+						}
 						break;
 					}
 					break;
@@ -273,6 +296,11 @@ int main(int argc, char** argv)
 						obj->EditPosTransfrom(glm::vec3(2.0f, -2.0f, 0.0f));
 						objects.push_back(obj);
 						break;
+					case MODE::ChangingColor:
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->ChangeColor(4);
+						}
+						break;
 					}
 					break;
 				case SDLK_5:
@@ -290,6 +318,11 @@ int main(int argc, char** argv)
 						obj->EditScaleTransform(glm::vec3(bottomRadius, coneHeight, bottomRadius));
 						obj->EditPosTransfrom(glm::vec3(0.0f, -2.5f, 2.0f));
 						objects.push_back(obj);
+						break;
+					case MODE::ChangingColor:
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->ChangeColor(5);
+						}
 						break;
 					}
 					break;
@@ -336,9 +369,8 @@ int main(int argc, char** argv)
 						mode = MODE::PickingObject;
 						break;
 					case MODE::Translating:
-						mode = MODE::ChoosingEdit;
-						break;
 					case MODE::Rotation:
+					case MODE::ChangingColor:
 						mode = MODE::ChoosingEdit;
 						break;
 					}
@@ -397,6 +429,7 @@ int main(int argc, char** argv)
 					case MODE::Rotation:
 					case MODE::Scaling:
 					case MODE::Translating:
+					case MODE::ChangingColor:
 						chosenObjects.resize(0);
 						mode = MODE::PickingObject;
 					}
