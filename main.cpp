@@ -370,6 +370,7 @@ int main(int argc, char** argv)
 						break;
 					case MODE::Translating:
 					case MODE::Rotation:
+					case MODE::Scaling:
 					case MODE::ChangingColor:
 						mode = MODE::ChoosingEdit;
 						break;
@@ -389,6 +390,7 @@ int main(int argc, char** argv)
 								chosenObjects[i]->SetAngleRotation(angle);
 							}
 						}
+						mode = MODE::ChoosingEdit;
 					}
 					break;
 				case SDLK_y:
@@ -405,6 +407,7 @@ int main(int argc, char** argv)
 								chosenObjects[i]->SetAngleRotation(angle);
 							}
 						}
+						mode = MODE::ChoosingEdit;
 					}
 					break;
 				case SDLK_z:
@@ -421,6 +424,7 @@ int main(int argc, char** argv)
 								chosenObjects[i]->SetAngleRotation(angle);
 							}
 						}
+						mode = MODE::ChoosingEdit;
 					}
 					break;
 				case SDLK_ESCAPE:
