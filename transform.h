@@ -27,6 +27,7 @@ public:
 		glm::quat quaternion = glm::angleAxis(angle, axis);
 		curQuaternion = quaternion * curQuaternion;
 		glm::mat4 rotMat = glm::toMat4(curQuaternion);
+		angle = 0.0f;
 		return posMat * rotMat * scaleMat;
 	}
 

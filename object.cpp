@@ -24,6 +24,7 @@ void Pyramid::DrawStandart() {
 	Vertex3 = Vertex(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec4(0.4f, 0.0f, 0.0f, 1.0f));
 	Vertex4 = Vertex(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec4(0.4f, 0.0f, 0.0f, 1.0f));
 	Top = Vertex(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec4(0.4f, 0.0f, 0.0f, 1.0f));
+	Base = Vertex(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec4(0.4f, 0.0f, 0.0f, 1.0f));
 	std::vector<Vertex> vertices = {
 		Vertex1, Vertex2, Vertex3, Vertex4, Top
 	};
@@ -46,7 +47,10 @@ void Pyramid::DrawStandart() {
 	
 }
 
-
+glm::vec3 Pyramid::GetObjectAxis() {
+	glm::vec4 axis = this->GetModel()*glm::vec4(*Top.GetPos(), 1.0f) - this->GetModel()*glm::vec4(*Base.GetPos(), 1.0f);
+	return glm::vec3(axis.x, axis.y, axis.z);
+}
 
 void Cone::DrawStandart() {
 	std::vector<unsigned int> indicesTopCircle;
@@ -76,6 +80,10 @@ void Cone::DrawStandart() {
 	colors[2] = 0.0f;
 	colors[3] = 1.0f;
 
+	posTopCenter.x = positions.x;
+	posTopCenter.y = positions.y;
+	posTopCenter.z = positions.z;
+
 	vertices.push_back(Vertex(positions, texCoords, normals, colors));
 
 	//float x = posBottomCenter.x;
@@ -84,6 +92,11 @@ void Cone::DrawStandart() {
 	positions.x = 0.0f;
 	positions.y = 0.0f;
 	positions.z = 0.0f;
+
+	posBottomCenter.x = positions.x;
+	posBottomCenter.y = positions.y;
+	posBottomCenter.z = positions.z;
+
 	vertices.push_back(Vertex(positions, texCoords, normals, colors));
 
 	indicesBottomCircle.push_back(1);
@@ -140,6 +153,11 @@ void Cone::DrawStandart() {
 	meshBody.Draw(GL_TRIANGLE_STRIP);
 	meshBottomEdge.Draw(GL_LINE_STRIP);
 	meshTopEdge.Draw(GL_LINE_STRIP);
+}
+
+glm::vec3 Cone::GetObjectAxis() {
+	glm::vec4 axes = this->GetModel()*glm::vec4(posTopCenter, 1.0f) - this->GetModel()*glm::vec4(posBottomCenter, 1.0f);
+	return glm::vec3(axes.x, axes.y, axes.z);
 }
 
 static std::vector<unsigned int> indicesTopCircle;

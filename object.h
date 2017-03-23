@@ -16,32 +16,26 @@ public:
 	//virtual void Draw() = 0;
 	virtual void EditPosTransfrom(glm::vec3 pos) = 0;
 	virtual void EditScaleTransform(glm::vec3 scale) = 0;
-	virtual glm::vec3 GetMinBox() = 0;
-	virtual glm::vec3 GetMaxBox() = 0;
+	//virtual glm::vec3 GetMinBox() = 0;
+	//virtual glm::vec3 GetMaxBox() = 0;
 	virtual glm::mat4 GetModel() = 0;
 	//virtual bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) = 0;
 	virtual void SetAngleRotation(float angle) = 0;
 	virtual void SetAxisRotation(glm::vec3 axis) = 0;
-	//virtual glm::vec3 GetObjectAxis() = 0;
+	virtual glm::vec3 GetObjectAxis() = 0;
 	virtual void DrawStandart() = 0;
 };
 
 class Pyramid : public Object {
 private:
-	Vertex Top;
-	Vertex Base;
 	Vertex Vertex1;
 	Vertex Vertex2;
 	Vertex Vertex3;
 	Vertex Vertex4;
-	glm::vec2 textureFirstTriangle;
-	glm::vec2 textureSecondTriangle;
-	glm::vec2 textureThirdTriangle;
-	glm::vec2 textureFourthTriangle;
-	glm::vec2 textureSquare;
+	Vertex Top;
+	Vertex Base;
 	Transform transform;
-	glm::vec3 minBox;
-	glm::vec3 maxBox;
+	glm::vec3 height;
 public:
 	Pyramid(Vertex Top, Vertex Base, Vertex Vertex1/*, glm::vec2 tex1Triangle, glm::vec2 tex2Triangle,
 		glm::vec2 tex3Triangle, glm::vec2 tex4Triangle, glm::vec2 texSquare*/);
@@ -88,15 +82,8 @@ public:
 
 	/*void FindVerticesPyramid(glm::vec3 posTop, glm::vec3 posBase, glm::vec3 posVertexSquare1, glm::vec3& posVertexSquare2,
 		glm::vec3& posVertexSquare3, glm::vec3& posVertexSquare4);*/
-	glm::vec3 GetMinBox() override{
-		return this->minBox;
-	}
-	glm::vec3 GetMaxBox() override{
-		return this->maxBox;
-	}
-	/*glm::vec3 GetObjectAxis() override;
-
-	void Draw() override;
+	glm::vec3 GetObjectAxis() override;
+	/*void Draw() override;
 	bool TriangleIntersection(glm::vec3 rayOrigin, glm::vec3 rayDirection, Ray ray) override;*/
 	Pyramid(){}
 	void DrawStandart() override;
@@ -109,8 +96,7 @@ private:
 	glm::vec3 posBottomCenter;
 	glm::vec3 posTopCenter;
 	Transform transform;
-	glm::vec3 minBox;
-	glm::vec3 maxBox;
+	glm::vec3 height;
 //	std::vector<unsigned int> indicesTopCircle;
 //	std::vector<unsigned int> indicesBottomCircle;
 //	std::vector<unsigned int> indicesBody;
@@ -131,14 +117,14 @@ public:
 	void SetAxisRotation(glm::vec3 axis) override{
 		transform.SetRotAxis(axis);
 	}
-	glm::vec3 GetMinBox() override{
-		return this->minBox;
-	}
-	glm::vec3 GetMaxBox() override{
-		return this->maxBox;
-	}
+	//glm::vec3 GetMinBox() override{
+	//	return this->minBox;
+	//}
+	//glm::vec3 GetMaxBox() override{
+	//	return this->maxBox;
+	//}
 
-	/*glm::vec3 GetObjectAxis() override;*/
+	glm::vec3 GetObjectAxis() override;
 
 	glm::mat4 GetModel() override{
 		return transform.GetModel();

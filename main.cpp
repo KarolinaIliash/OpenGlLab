@@ -1,29 +1,13 @@
 #include <iostream>
 #include <SDL/SDL.h>
 #include "display.h"
-//#include "mesh.h"
-//#include "shader.h"
 #include "texture.h"
-//#include "transform.h"
-//#include "camera.h"
 #include"Ray.h"
 #include"object.h"
 
-//static const int DISPLAY_WIDTH = 900;
-//static const int DISPLAY_HEIGHT = 600;
-//static Camera camera(glm::vec3(0.0f, 0.0f, -5.0f), 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.1f, 100.0f);
-
-//void DrawPyramide();
-//void DrawCone(float radiusBottom, float radiusTop, Vertex centerBottom, Vertex centerTop);
-//void FindVerticesCone(float radiusBottom, float radiusTop, Vertex centerBottom, Vertex centerTop,
-//				  std::vector<Vertex>& vertices, std::vector<unsigned int>& indices);
 void DrawAxes();
 void getInfoCone(float& bottomRadius, float& topRadius, float& coneHeight);
 void getInfoPyramid(float& height, float& halfDiagonal);
-//void FindVerticesPyramid(glm::vec3 posTop, glm::vec3 posBase, glm::vec3 posVertexSquare1, glm::vec3& posVertexSquare2,
-//	glm::vec3& posVertexSquare3, glm::vec3& posVertexSquare4);
-
-
 
 
 int main(int argc, char** argv)
@@ -62,6 +46,9 @@ int main(int argc, char** argv)
 	Object* obj;
 	bool isFirstPointTR = false;
 	bool isSecondPointTR = false;
+	float angle;
+	bool isAngleSet = false;
+	GLuint index;
 	std::vector<Object*> chosenObjects;
 	glm::vec3 toTranslate(0, 0, 0);
 	glm::vec3 firstPoint(0, 0, 0);
@@ -86,6 +73,9 @@ int main(int argc, char** argv)
 		case MODE::Scaling:
 			display.ChangeTitle("Enter up and down arrows to scale chosen objects");
 			break;
+		case MODE::Rotation:
+			display.ChangeTitle("Pick by mouse object's axis or by keys axis x, y or z and enter angle of rotation in consol");
+			break;
 		}
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -98,7 +88,7 @@ int main(int argc, char** argv)
 					if (e.button.button == SDL_BUTTON_LEFT) {
 					GLbyte color[4];
 					GLfloat depth;
-					GLuint index;
+					//GLuint index;
 
 					glReadPixels(e.button.x, DISPLAY_HEIGHT - e.button.y - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
 					glReadPixels(e.button.x, DISPLAY_HEIGHT - e.button.y - 1, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
@@ -110,6 +100,23 @@ int main(int argc, char** argv)
 					else {
 						if (e.button.button == SDL_BUTTON_RIGHT) {
 							mode = MODE::ChoosingEdit;
+						}
+					}
+					break;
+				case MODE::Rotation:
+					//GLuint index;
+					glReadPixels(e.button.x, DISPLAY_HEIGHT - e.button.y - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+					if (index) {
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->SetAxisRotation(objects[index - 1]->GetObjectAxis());
+							if (!isAngleSet) {
+								std::cout << "Enter angle of rotation\n";
+								std::cin >> angle;
+								isAngleSet = true;
+								for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+									chosenObjects[i]->SetAngleRotation(angle);
+								}
+							}
 						}
 					}
 					break;
@@ -172,6 +179,7 @@ int main(int argc, char** argv)
 				case SDLK_r:
 					if (mode == MODE::ChoosingEdit) {
 						mode = MODE::Rotation;
+						isAngleSet = false;
 					}
 					break;
 				case SDLK_s:
@@ -330,6 +338,57 @@ int main(int argc, char** argv)
 					case MODE::Translating:
 						mode = MODE::ChoosingEdit;
 						break;
+					case MODE::Rotation:
+						mode = MODE::ChoosingEdit;
+						break;
+					}
+					break;
+				case SDLK_x:
+					if (mode == MODE::Rotation) {
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->SetAxisRotation(glm::vec3(1.0f, 0.0f, 0.0f));
+							//mode = MODE::ChoosingEdit;
+						}
+						if (!isAngleSet) {
+							std::cout << "Enter angle of rotation\n";
+							std::cin >> angle;
+							isAngleSet = true;
+							for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+								chosenObjects[i]->SetAngleRotation(angle);
+							}
+						}
+					}
+					break;
+				case SDLK_y:
+					if (mode == MODE::Rotation) {
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->SetAxisRotation(glm::vec3(0.0f, 1.0f, 0.0f));
+							//mode = MODE::ChoosingEdit;
+						}
+						if (!isAngleSet) {
+							std::cout << "Enter angle of rotation\n";
+							std::cin >> angle;
+							isAngleSet = true;
+							for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+								chosenObjects[i]->SetAngleRotation(angle);
+							}
+						}
+					}
+					break;
+				case SDLK_z:
+					if (mode == MODE::Rotation) {
+						for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+							chosenObjects[i]->SetAxisRotation(glm::vec3(0.0f, 0.0f, 1.0f));
+							//mode = MODE::ChoosingEdit;
+						}
+						if (!isAngleSet) {
+							std::cout << "Enter angle of rotation\n";
+							std::cin >> angle;
+							isAngleSet = true;
+							for (unsigned int i = 0; i < chosenObjects.size(); i++) {
+								chosenObjects[i]->SetAngleRotation(angle);
+							}
+						}
 					}
 					break;
 				case SDLK_ESCAPE:
