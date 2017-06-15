@@ -138,11 +138,13 @@ int main(int argc, char** argv)
 			case SDL_KEYDOWN:
 				switch (e.key.keysym.sym) {
 				case SDLK_DELETE:
-					for (int i = 0; i < objects.size(); i++) {
-						delete objects[i];
+					if (mode == MODE::DrawingCone || mode == MODE::DrawingPyramid) {
+						for (int i = 0; i < objects.size(); i++) {
+							delete objects[i];
+						}
+						objects.resize(0);
+						chosenObjects.resize(0);
 					}
-					objects.resize(0);
-					chosenObjects.resize(0);
 					break;
 				case SDLK_d:
 					if (mode == MODE::ChoosingEdit) {
