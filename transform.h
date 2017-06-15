@@ -10,18 +10,19 @@
 struct Transform
 {
 public:
-	Transform(const glm::vec3& pos = glm::vec3(0.0f,0.0f,0.0f), const glm::vec3& axis = glm::vec3(), const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f), const float& angle = 0.0)
+	Transform(bool isSaved = false, const glm::vec3& pos = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& axis = glm::vec3(), const glm::vec3& scale = glm::vec3(1.0f, 1.0f, 1.0f), const float& angle = 0.0)
 	{
 		this->pos = pos;
 		this->axis = axis;
 		this->angle = angle;
 		this->scale = scale;
 		this->curQuaternion = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
+		this->isSaved = isSaved;
 	}
 
-	inline glm::mat4 GetModel() 
+	inline glm::mat4 GetModel()
 	{
-		
+		if (isSaved) return model;
 		glm::mat4 posMat = glm::translate(pos);
 		glm::mat4 scaleMat = glm::scale(scale);
 		glm::quat quaternion = glm::angleAxis(angle, axis);
@@ -31,7 +32,7 @@ public:
 		return posMat * rotMat * scaleMat;
 	}
 
-	inline glm::mat4 GetMVP( Camera& camera) {
+	inline glm::mat4 GetMVP(Camera& camera) {
 		glm::mat4 VP = camera.GetViewProjection();
 		glm::mat4 M = GetModel();
 		glm::mat4 MNP = VP * M;
@@ -58,10 +59,11 @@ public:
 	//inline void SetRotAxis(glm::vec3& axis) { this->axis = axis; }
 	//inline void SetRotAngle(float& angle) { this->angle = angle; }
 
-	inline void EditScale(glm::vec3& scale) { this->scale.x *= scale.x; this->scale.y *= scale.y; this->scale.z *= scale.z;}
+	inline void EditScale(glm::vec3& scale) { this->scale.x *= scale.x; this->scale.y *= scale.y; this->scale.z *= scale.z; }
 
+	inline void SetModel(glm::mat4 model) { this->model = model; }
 
-protected:
+	inline void SetSaved(bool isSaved) { this->isSaved = isSaved; }
 private:
 	glm::vec3 pos;
 	//glm::vec3 rot;
@@ -69,6 +71,10 @@ private:
 	glm::vec3 axis;
 	glm::vec3 scale;
 	glm::quat curQuaternion;
+
+
+	glm::mat4 model;
+	bool isSaved;
 	//glm::mat4 curRotMat;
 //	glm::mat4 curPosMat;
 	//glm::mat4 curScaleMat;
