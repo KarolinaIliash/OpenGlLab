@@ -11,20 +11,59 @@ static glm::vec3 cameraPosition(2.0f, 5.0f, 5.0f);
 static Camera camera(cameraPosition, 70.0f, (float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT, 0.01f, 100.0f);
 
 class Object {
+protected:
+	Transform transform;
 public:
-	virtual void EditPosTransfrom(glm::vec3 pos) = 0;
-	virtual void EditScaleTransform(glm::vec3 scale) = 0;
-	virtual void SetSaved(bool isSaved) = 0;
-	virtual void SetModel(glm::mat4 model) = 0;
-	virtual glm::mat4 GetModel() = 0;
-	virtual void SetAngleRotation(float angle) = 0;
-	virtual void SetAxisRotation(glm::vec3 axis) = 0;
+	//virtual void EditPosTransfrom(glm::vec3 pos) = 0;
+	//virtual void EditScaleTransform(glm::vec3 scale) = 0;
+	//virtual void SetSaved(bool isSaved) = 0;
+	//virtual void SetModel(glm::mat4 model) = 0;
+	//virtual glm::mat4 GetModel() = 0;
+	//virtual void SetQuat(glm::mat4 RotMat) = 0;
+	//virtual glm::mat4 GetRotMat() = 0;
+	//virtual glm::vec3 GetPos() = 0;
+	//virtual glm::vec3 GetScale() = 0;
+	//virtual void SetAngleRotation(float angle) = 0;
+	//virtual void SetAxisRotation(glm::vec3 axis) = 0;
 	virtual glm::vec3 GetObjectAxis() = 0;
 	virtual void DrawStandart() = 0;
 	virtual void ChangeColor(int) = 0;
 	virtual std::vector<glm::vec4> GetColors() = 0;
 	virtual bool IsPyramid() = 0;
 	virtual float GetDelta() { return 0.0f; }; //actual only for cone
+
+
+	void EditPosTransfrom(glm::vec3 pos){
+		transform.EditPos(pos);
+	}
+	void EditScaleTransform(glm::vec3 scale){
+		transform.EditScale(scale);
+	}
+
+
+	void SetQuat(glm::mat4 RotMat){
+		transform.SetQuaternion(RotMat);
+	}
+	glm::mat4 GetRotMat(){
+		return transform.GetRotMat();
+	}
+	glm::vec3 GetPos(){
+		return transform.GetPos();
+	}
+	glm::vec3 GetScale(){
+		return transform.GetScale();
+	}
+
+	void SetAngleRotation(float angle){
+		transform.SetRotAngle(angle);
+	}
+
+	void SetAxisRotation(glm::vec3 axis){
+		transform.SetRotAxis(axis);
+	}
+	glm::mat4 GetModel(){
+		return transform.GetModel();
+	}
 };
 
 class Pyramid : public Object {
@@ -35,7 +74,7 @@ private:
 	Vertex Vertex4;
 	Vertex Top;
 	Vertex Base;
-	Transform transform;
+	
 	glm::vec3 height;
 	glm::vec4 colorSquare;
 	glm::vec4 colorTriangle1;
@@ -55,32 +94,21 @@ public:
 		this->colorTriangle4 = colorTriangle4;
 	}
 
-	void EditPosTransfrom(glm::vec3 pos) override {
-		transform.EditPos(pos);
-	}
-	void EditScaleTransform(glm::vec3 scale) override {
-		transform.EditScale(scale);
-	}
+	
 
-	void SetSaved(bool isSaved) override {
+	/*void SetSaved(bool isSaved) override {
 		transform.SetSaved(isSaved);
 	}
 
 	void SetModel(glm::mat4 model) override {
 		transform.SetModel(model);
-	}
+	}*/
 
-	glm::mat4 GetModel() override{
+	/*glm::mat4 GetModel() override{
 		return transform.GetModel();
-	}
+	}*/
 
-	void SetAngleRotation(float angle) override{
-		transform.SetRotAngle(angle);
-	}
-
-	void SetAxisRotation(glm::vec3 axis) override{
-		transform.SetRotAxis(axis);
-	}
+	
 	glm::vec3 GetObjectAxis() override;
 	void DrawStandart() override;
 	void ChangeColor(int) override;
@@ -110,38 +138,38 @@ private:
 	glm::vec4 colorTop;
 	glm::vec4 colorBottom;
 	glm::vec4 colorBody;
-	Transform transform;
+	//Transform transform;
 	glm::vec3 height;
 	float delta;
 public:
 
-	void EditPosTransfrom(glm::vec3 pos) override {
+	/*void EditPosTransfrom(glm::vec3 pos) override {
 		transform.EditPos(pos);
 	}
 	void EditScaleTransform(glm::vec3 scale) override {
 		transform.EditScale(scale);
-	}
-	void SetAngleRotation(float angle) override{
+	}*/
+	/*void SetAngleRotation(float angle) override{
 		transform.SetRotAngle(angle);
 	}
 
 	void SetAxisRotation(glm::vec3 axis) override{
 		transform.SetRotAxis(axis);
-	}
+	}*/
 
-	void SetSaved(bool isSaved) override {
+	/*void SetSaved(bool isSaved) override {
 		transform.SetSaved(isSaved);
 	}
 
 	void SetModel(glm::mat4 model) override {
 		transform.SetModel(model);
 	}
-
+*/
 	glm::vec3 GetObjectAxis() override;
 
-	glm::mat4 GetModel() override{
+	/*glm::mat4 GetModel() override{
 		return transform.GetModel();
-	}
+	}*/
 	Cone(float delta, glm::vec4 colorTop = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f),
 	glm::vec4 colorBottom = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f),
     glm::vec4 colorBody = glm::vec4(0.5f, 0.0f, 0.0f, 1.0f)) {

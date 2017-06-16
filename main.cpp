@@ -504,14 +504,16 @@ int main(int argc, char** argv)
 
 void AddTables(sqlite3* db, std::vector<Object*>& objects) {
 	char *err = 0;
-	const char* SQL1 = "CREATE TABLE IF NOT EXISTS pyramid(id INT,m00 REAL,m01 REAL,m02 REAL,m03 REAL,m10 REAL,m11 REAL,m12 REAL,m13 REAL,m20 REAL,m21 REAL,m22 REAL,m23 REAL,m30 REAL,m31 REAL,m32 REAL,m33 REAL,cs0 REAL,cs1 REAL,cs2 REAL,cs3 REAL,ct10 REAL,ct11 REAL,ct12 REAL,ct13 REAL,ct20 REAL,ct21 REAL,ct22 REAL,ct23 REAL,ct30 REAL,ct31 REAL,ct32 REAL,ct33 REAL,ct40 REAL,ct41 REAL,ct42REAL,ct43 REAL); DELETE FROM PYRAMID;";
+	//const char* SQL1 = "CREATE TABLE IF NOT EXISTS pyramid(id INT,m00 REAL,m01 REAL,m02 REAL,m03 REAL,m10 REAL,m11 REAL,m12 REAL,m13 REAL,m20 REAL,m21 REAL,m22 REAL,m23 REAL,m30 REAL,m31 REAL,m32 REAL,m33 REAL,cs0 REAL,cs1 REAL,cs2 REAL,cs3 REAL,ct10 REAL,ct11 REAL,ct12 REAL,ct13 REAL,ct20 REAL,ct21 REAL,ct22 REAL,ct23 REAL,ct30 REAL,ct31 REAL,ct32 REAL,ct33 REAL,ct40 REAL,ct41 REAL,ct42REAL,ct43 REAL); DELETE FROM PYRAMID;";
+	const char* SQL1 = "CREATE TABLE IF NOT EXISTS pyramid(id INT,m00 REAL,m01 REAL,m02 REAL,m03 REAL,m10 REAL,m11 REAL,m12 REAL,m13 REAL,m20 REAL,m21 REAL,m22 REAL,m23 REAL,m30 REAL,m31 REAL,m32 REAL,m33 REAL,cs0 REAL,cs1 REAL,cs2 REAL,cs3 REAL,ct10 REAL,ct11 REAL,ct12 REAL,ct13 REAL,ct20 REAL,ct21 REAL,ct22 REAL,ct23 REAL,ct30 REAL,ct31 REAL,ct32 REAL,ct33 REAL,ct40 REAL,ct41 REAL,ct42REAL,ct43 REAL,pos0 REAL,pos1 REAL,pos2 REAL,scale0 REAL, scale1 REAL, scale2 REAL); DELETE FROM PYRAMID;";
+	
 	if (sqlite3_exec(db, SQL1, 0, 0, &err))
 	{
 		fprintf(stderr, "Ошибка SQL: %sn", err);
 		sqlite3_free(err);
 	}
 
-	const char* SQL2 = "CREATE TABLE IF NOT EXISTS cone(id INT,m00 REAL,m01 REAL,m02 REAL,m03 REAL,m10 REAL,m11 REAL,m12 REAL,m13 REAL,m20 REAL,m21 REAL,m22 REAL,m23 REAL,m30 REAL,m31 REAL,m32 REAL,m33 REAL,cb0 REAL,cb1 REAL,cb2 REAL,cb3 REAL,ct0 REAL,ct1 REAL,ct2 REAL,ct3 REAL,cbd0 REAL,cbd1 REAL,cbd2 REAL,cbd3 REAL,delta REAL); DELETE FROM CONE;";
+	const char* SQL2 = "CREATE TABLE IF NOT EXISTS cone(id INT,m00 REAL,m01 REAL,m02 REAL,m03 REAL,m10 REAL,m11 REAL,m12 REAL,m13 REAL,m20 REAL,m21 REAL,m22 REAL,m23 REAL,m30 REAL,m31 REAL,m32 REAL,m33 REAL,cb0 REAL,cb1 REAL,cb2 REAL,cb3 REAL,ct0 REAL,ct1 REAL,ct2 REAL,ct3 REAL,cbd0 REAL,cbd1 REAL,cbd2 REAL,cbd3 REAL,delta REAL,pos0 REAL,pos1 REAL,pos2 REAL,scale0 REAL, scale1 REAL, scale2 REAL); DELETE FROM CONE;";
 	if (sqlite3_exec(db, SQL2, 0, 0, &err))
 	{
 		fprintf(stderr, "Ошибка SQL: %sn", err);
@@ -527,7 +529,7 @@ void AddTables(sqlite3* db, std::vector<Object*>& objects) {
 			sql = "INSERT INTO CONE VALUES(";
 		}
 		sql += std::to_string(int(i));
-		glm::mat4 Model = objects[i]->GetModel();
+		glm::mat4 Model = objects[i]->GetRotMat();
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++) {
 				sql += ", " + std::to_string(Model[i][j]);
@@ -541,6 +543,14 @@ void AddTables(sqlite3* db, std::vector<Object*>& objects) {
 		if (!objects[i]->IsPyramid()) {
 			float delta = objects[i]->GetDelta();
 			sql += ", " + std::to_string(delta);
+		}
+		glm::vec3 pos = objects[i]->GetPos();
+		glm::vec3 scale = objects[i]->GetScale();
+		for (int i = 0; i < 3; i++) {
+			sql += ", " + std::to_string(pos[i]);
+		}
+		for (int i = 0; i < 3; i++) {
+			sql += ", " + std::to_string(scale[i]);
 		}
 		sql += ");";
 		const char* SQL = sql.c_str();
@@ -571,16 +581,17 @@ void GetPyramidTableData(sqlite3 *db, std::vector<Object*>& objects)
 
 			if (res == SQLITE_ROW)
 			{
-				glm::mat4 model;
+				glm::mat4 rotMat;
 				glm::vec4 colorSquare;
 				glm::vec4 colorTr1;
 				glm::vec4 colorTr2;
 				glm::vec4 colorTr3;
 				glm::vec4 colorTr4;
-
+				glm::vec3 pos;
+				glm::vec3 scale;
 
 				for (int i = 1; i <= 16; i++) {
-					model[(i - 1) / 4][(i - 1) % 4] = sqlite3_column_double(statement, i);
+					rotMat[(i - 1) / 4][(i - 1) % 4] = sqlite3_column_double(statement, i);
 				}
 
 				int counter = 0;
@@ -608,10 +619,22 @@ void GetPyramidTableData(sqlite3 *db, std::vector<Object*>& objects)
 					colorTr4[counter] = sqlite3_column_double(statement, i);
 					counter++;
 				}
+				counter = 0;
+				for (int i = 37; i <= 39; i++) {
+					pos[counter] = sqlite3_column_double(statement, i);
+					counter++;
+				}
+				counter = 0;
+				for (int i = 40; i <= 42; i++) {
+					scale[counter] = sqlite3_column_double(statement, i);
+					counter++;
+				}
 
 				Object* obj = new Pyramid(colorSquare, colorTr1, colorTr2, colorTr3, colorTr4);
-				obj->SetSaved(true);
-				obj->SetModel(model);
+				//obj->SetSaved(true);
+				obj->SetQuat(rotMat);
+				obj->EditPosTransfrom(pos);
+				obj->EditScaleTransform(scale);
 				objects.push_back(obj);
 			}
 			if (res == SQLITE_DONE || res == SQLITE_ERROR)
@@ -640,14 +663,15 @@ void GetConeTableData(sqlite3 *db, std::vector<Object*>& objects)
 
 			if (res == SQLITE_ROW)
 			{
-				glm::mat4 model;
+				glm::mat4 rotMat;
 				glm::vec4 colorBottom;
 				glm::vec4 colorTop;
 				glm::vec4 colorBody;
-
+				glm::vec3 pos;
+				glm::vec3 scale;
 
 				for (int i = 1; i <= 16; i++) {
-					model[(i - 1) / 4][(i - 1) % 4] = sqlite3_column_double(statement, i);
+					rotMat[(i - 1) / 4][(i - 1) % 4] = sqlite3_column_double(statement, i);
 				}
 
 				int counter = 0;
@@ -666,9 +690,21 @@ void GetConeTableData(sqlite3 *db, std::vector<Object*>& objects)
 					counter++;
 				}
 				float delta = sqlite3_column_double(statement, 29);
+				counter = 0;
+				for (int i = 30; i <= 32; i++) {
+					pos[counter] = sqlite3_column_double(statement, i);
+					counter++;
+				}
+				counter = 0;
+				for (int i = 33; i <= 35; i++) {
+					scale[counter] = sqlite3_column_double(statement, i);
+					counter++;
+				}
 				Object* obj = new Cone(delta, colorTop, colorBottom, colorBody);
-				obj->SetSaved(true);
-				obj->SetModel(model);
+				
+				obj->SetQuat(rotMat);
+				obj->EditPosTransfrom(pos);
+				obj->EditScaleTransform(scale);
 				objects.push_back(obj);
 			}
 			if (res == SQLITE_DONE || res == SQLITE_ERROR)
